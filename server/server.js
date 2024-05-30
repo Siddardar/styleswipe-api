@@ -32,8 +32,9 @@ app.get("/getUniqlo", (req, res) => {
     .catch(err => console.log(err))
 })
 
+const port = process.env.PORT || 5051;
 
-app.listen(5051, () => {
+app.listen(port, () => {
   console.log(`Server running`);
 });
 
