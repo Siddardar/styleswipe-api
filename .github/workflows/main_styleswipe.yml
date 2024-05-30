@@ -25,9 +25,12 @@ jobs:
         run: |
           cd server
           npm install
+          ls -la
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip
+        run: |
+          cd server
+          zip -r ../release.zip ./*  # Zip the contents of the server directory
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
