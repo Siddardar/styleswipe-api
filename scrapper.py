@@ -1,8 +1,9 @@
 import requests
-import json
+import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import certifi
+from dotenv import load_dotenv
 
 class Uniqlo(object):
     def __init__(self) -> None:
@@ -22,23 +23,68 @@ class Uniqlo(object):
         }
 
     def fetch(self):
-        res = self.client.get("https://www.uniqlo.com/sg/api/commerce/v3/en/products?path=%2C%2C25596&limit=24&offset=0", headers=self.custom_headers)
+        print("Fetching Uniqlo Data")
+        res = self.client.get("https://www.uniqlo.com/sg/api/commerce/v3/en/products?path=%2C%2C25596&limit=50&offset=0", headers=self.custom_headers)
 
         print(res.status_code)
         
         return res.json()
 
+    def clean(self, json_data):
+        print("Cleaning Uniqlo Data")
+        data = json_data['result']['items']
+
+        clean_data = []
+        colors = json_data['result']['aggregations']['colors']
+
+        for item in data:
+
+            price_lookup = 'base'
+            
+            if item['prices']['base'] == None:
+                price_lookup = 'promo'
+            
+            clean_data.append({
+
+                'productID': item['productId'],
+                'name': item['name'],
+                'price': [item['prices'][price_lookup]['currency']['symbol'], item['prices'][price_lookup]['value']],
+                'image': item['images']['main'],
+                'gender': item['genderName'],
+                'sizes': item['sizes'],
+                'rating': item['rating'],
+                'brand': 'Uniqlo'
+            
+            })
+
+
+        send_data = []
+
+        send_data.append({
+            'data': clean_data,
+            'colors': colors
+        })        
+   
+        return send_data
+
     def database(self, json_data):
-        uri = "mongodb+srv://srsanagala1011:1Sanagala@test.b1cuqz7.mongodb.net/?retryWrites=true&w=majority&appName=Test"
+        print("Connecting to MongoDB")
         
+        load_dotenv()
+        uri = os.getenv("MONGODB_API")
+
         client = MongoClient(uri, tlsCAFile=certifi.where())
         db = client["my_data"]
-        collection = db["clothes_data"]
+        collection = db["uniqlo_men_tops"]
 
         if isinstance(json_data, list):
             collection.insert_many(json_data)
+            print('hi')
         else:
             collection.insert_one(json_data)
+            print('hey')
+        
+        print("Data Inserted")
 
 
 
@@ -48,5 +94,5 @@ class Uniqlo(object):
 if (__name__ == '__main__'):
     test = Uniqlo()
 
-    test.database(test.fetch())
+    test.database(test.clean(test.fetch()))
 
