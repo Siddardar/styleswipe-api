@@ -16,15 +16,13 @@ class Uniqlo(object):
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         }
 
-        self.data = {
-            'path': ',,25596',
-            'limit': '24',
-            'offset': '0',
-        }
+        self.links = ["https://www.uniqlo.com/sg/api/commerce/v3/en/products?path=%2C%2C25596&limit=50&offset=0", "https://www.uniqlo.com/sg/api/commerce/v3/en/products?path=%2C%2C25523&limit=50&offset=0"]
+        self.collections = ["uniqlo_men_tops", "uniqlo_women_tops"]
 
-    def fetch(self):
+
+    def fetch(self, link):
         print("Fetching Uniqlo Data")
-        res = self.client.get("https://www.uniqlo.com/sg/api/commerce/v3/en/products?path=%2C%2C25596&limit=50&offset=0", headers=self.custom_headers)
+        res = self.client.get(link, headers=self.custom_headers)
 
         print(res.status_code)
         
@@ -67,7 +65,7 @@ class Uniqlo(object):
    
         return send_data
 
-    def database(self, json_data):
+    def database(self, json_data, collection_name):
         print("Connecting to MongoDB")
         
         load_dotenv()
@@ -75,7 +73,7 @@ class Uniqlo(object):
 
         client = MongoClient(uri, tlsCAFile=certifi.where())
         db = client["my_data"]
-        collection = db["uniqlo_men_tops"]
+        collection = db[collection_name]
 
         if isinstance(json_data, list):
             collection.insert_many(json_data)
@@ -93,6 +91,7 @@ class Uniqlo(object):
 
 if (__name__ == '__main__'):
     test = Uniqlo()
-
-    test.database(test.clean(test.fetch()))
+    for i in range(len(test.links)):
+        print(f"Fetching Data for {test.collections[i]}")
+        test.database(test.clean(test.fetch(test.links[i])), test.collections[i])
 

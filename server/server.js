@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const UniqloModel = require("./modals/UniqloMenTops");
+const UniqloMenTops = require("./modals/UniqloMenTops");
+const UniqloWomenTops = require("./modals/UniqloWomenTops");
 require('dotenv').config();
 const databaseUrl = process.env.ATLAS_URL;
 
@@ -27,7 +28,13 @@ mongoose.connect(uri, {
 
 //Routes
 app.get("/getUniqloMenTops", (req, res) => {
-    UniqloModel.find()
+  UniqloMenTops.find()
+    .then(clothesData => res.json(clothesData))
+    .catch(err => console.log(err))
+})
+
+app.get("/getUniqloWomenTops", (req, res) => {
+  UniqloWomenTops.find()
     .then(clothesData => res.json(clothesData))
     .catch(err => console.log(err))
 })
