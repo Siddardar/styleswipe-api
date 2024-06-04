@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const Uniqlo = require("./modals/Uniqlo");
 const UniqloMenTops = require("./modals/UniqloMenTops");
 const UniqloWomenTops = require("./modals/UniqloWomenTops");
 require('dotenv').config();
@@ -27,6 +28,12 @@ mongoose.connect(uri, {
 });
 
 //Routes
+app.get("/getUniqlo", (req, res) => {
+  Uniqlo.find()
+    .then(clothesData => res.json(clothesData))
+    .catch(err => console.log(err))
+})
+
 app.get("/getUniqloMenTops", (req, res) => {
   UniqloMenTops.find()
     .then(clothesData => res.json(clothesData))

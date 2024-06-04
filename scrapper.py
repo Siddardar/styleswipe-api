@@ -16,8 +16,15 @@ class Uniqlo(object):
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         }
 
-        self.links = ["https://www.uniqlo.com/sg/api/commerce/v3/en/products?path=%2C%2C25596&limit=50&offset=0", "https://www.uniqlo.com/sg/api/commerce/v3/en/products?path=%2C%2C25523&limit=50&offset=0"]
-        self.collections = ["uniqlo_men_tops", "uniqlo_women_tops"]
+        self.links = [
+            "https://www.uniqlo.com/sg/api/commerce/v3/en/products?path=%2C%2C25596&limit=50&offset=0", 
+            "https://www.uniqlo.com/sg/api/commerce/v3/en/products?path=%2C%2C25523&limit=50&offset=0"
+                      
+        ]
+        self.collections = [
+            "uniqlo_men_tops", 
+            "uniqlo_women_tops"
+        ]
 
 
     def fetch(self, link):
