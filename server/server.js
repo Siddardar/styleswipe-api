@@ -46,6 +46,10 @@ app.get("/getUniqloWomenTops", (req, res) => {
     .catch(err => console.log(err))
 })
 
+app.get("/", (req, res) => {
+  console.log("Server running");
+})
+
 const port = process.env.PORT || 5051;
 
 app.listen(port, () => {
