@@ -1,18 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
 const Uniqlo = require("./modals/Uniqlo");
 const UniqloMenTops = require("./modals/UniqloMenTops");
 const UniqloWomenTops = require("./modals/UniqloWomenTops");
-require('dotenv').config();
-const databaseUrl = process.env.ATLAS_URL;
 
-if (!databaseUrl) {
-  console.error('Database URL is not defined. Please set ATLAS_URL in your .env file.');
-  process.exit(1);
-}
+const Stripe = require('stripe');
 
 const app = express();
 app.use(express.json());
+
+require('dotenv').config();
+const databaseUrl = process.env.ATLAS_URL;
+const stripeSecret = process.env.STRIPE_SECRET_KEY;
 
 app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -27,7 +27,7 @@ mongoose.connect(uri, {
     dbName: 'my_data',
 });
 
-//Routes
+//Clothing Routes
 app.get("/getUniqlo", (req, res) => {
   Uniqlo.find()
     .then(clothesData => res.json(clothesData))
@@ -46,13 +46,58 @@ app.get("/getUniqloWomenTops", (req, res) => {
     .catch(err => console.log(err))
 })
 
-app.get("/", (req, res) => {
-  console.log("Server running");
-})
+//Stripe Routes
 
-const port = process.env.PORT || 5051;
+
+app.post('/payment-sheet', async (req, res) => {
+  const { totalPrice } = req.body;
+  const amt = Math.round(parseFloat(totalPrice.substr(2)) * 100);
+
+  
+
+  const stripe = new Stripe(stripeSecret, {
+    apiVersion: '2024-04-10',
+  });
+  
+  const customers = await stripe.customers.list();
+
+  const customer = customers.data[0];
+  //console.log(customer)
+
+  if (!customer) {
+    return res.send({
+      error: 'No customer found',
+    
+    })
+  }
+
+  const ephemeralKey = await stripe.ephemeralKeys.create(
+    {customer: customer.id},
+    {apiVersion: '2024-04-10'}
+  );
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: amt,
+    currency: 'sgd',
+    customer: customer.id,
+    automatic_payment_methods: {
+      enabled: true,
+    },
+  });
+
+  res.json({
+    paymentIntent: paymentIntent.client_secret,
+    ephemeralKey: ephemeralKey.secret,
+    customer: customer.id,
+  });
+});
+
+
+
+
+//Run Server
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-  console.log(`Server running`);
+  console.log(`Server running on port ${port}`);
 });
 
