@@ -14,7 +14,7 @@ require('dotenv').config();
 const databaseUrl = process.env.ATLAS_URL;
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 
-app.use((req, res, next) => {
+app.use((_, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.set('Pragma', 'no-cache');
   res.set('Expires', '0');
@@ -27,28 +27,30 @@ mongoose.connect(uri, {
     dbName: 'my_data',
 });
 
-//Clothing Routes
-app.get("/getUniqlo", (req, res) => {
+//Clothing Routes Men
+app.get("/getUniqlo", (_, res) => {
   Uniqlo.find()
     .then(clothesData => res.json(clothesData))
     .catch(err => console.log(err))
 })
 
-app.get("/getUniqloMenTops", (req, res) => {
+app.get("/Men/getUniqloTops", (_, res) => {
   UniqloMenTops.find()
     .then(clothesData => res.json(clothesData))
     .catch(err => console.log(err))
 })
 
-app.get("/getUniqloWomenTops", (req, res) => {
+
+//Clothing Routes Women
+app.get("/Women/getUniqloTops", (_, res) => {
   UniqloWomenTops.find()
     .then(clothesData => res.json(clothesData))
     .catch(err => console.log(err))
 })
 
+
+
 //Stripe Routes
-
-
 app.post('/payment-sheet', async (req, res) => {
   const { totalPrice } = req.body;
   const amt = Math.round(parseFloat(totalPrice.substr(2)) * 100);
