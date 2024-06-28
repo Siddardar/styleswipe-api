@@ -4,9 +4,13 @@ const mongoose = require('mongoose');
 const BrandsMen = require("./modals/BrandsMen");
 const BrandsWomen = require("./modals/BrandsWomen");
 
+//Uniqlo Modals
 const Uniqlo = require("./modals/Uniqlo");
 const UniqloMenTops = require("./modals/UniqloMenTops");
 const UniqloWomenTops = require("./modals/UniqloWomenTops");
+
+//LoveBonito Modals
+const LoveBonitoWomenTops = require("./modals/LoveBonitoTops");
 
 const Stripe = require('stripe');
 
@@ -60,6 +64,12 @@ app.get("/Men/getUniqloTops", (_, res) => {
 //Clothing Routes Women
 app.get("/Women/getUniqloTops", (_, res) => {
   UniqloWomenTops.find()
+    .then(clothesData => res.json(clothesData))
+    .catch(err => console.log(err))
+})
+
+app.get("/Women/getLoveBonitoTops", (_, res) => {
+  LoveBonitoWomenTops.find()
     .then(clothesData => res.json(clothesData))
     .catch(err => console.log(err))
 })

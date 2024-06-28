@@ -1,0 +1,46 @@
+[
+    {
+        "productID": "273890",
+        "name": "Ling Belted Tailored Vest",
+        "price": [
+            "S$",
+            59
+        ],
+        "image": [
+            {
+                "url": "https://public-images-for-media.s3.ap-southeast-1.amazonaws.com/media/catalog/product/1/1/11c4030040-014_4.jpg",
+                "colorString": "Black"
+            },
+            {
+                "url": "https://public-images-for-media.s3.ap-southeast-1.amazonaws.com/media/catalog/product/1/1/11c4030040-026_e542h6uzn8rryadf.jpg",
+                "colorString": "Sakura Pink"
+            },
+            {
+                "url": "https://public-images-for-media.s3.ap-southeast-1.amazonaws.com/media/catalog/product/1/1/11c4030040-106_4.jpg",
+                "colorString": "Ivory"
+            },
+            {
+                "url": "https://public-images-for-media.s3.ap-southeast-1.amazonaws.com/media/catalog/product/1/1/11c4030040-121_jc3nhchlngq2ryah.jpg",
+                "colorString": "Light Blue"
+            },
+            {
+                "url": "https://public-images-for-media.s3.ap-southeast-1.amazonaws.com/media/catalog/product/1/1/11c4030040-235_12.jpg",
+                "colorString": "Clay"
+            }
+        ],
+        "gender": "Female",
+        "sizes": [
+            "XXS",
+            "XS",
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "rating": "",
+        "brand": "LoveBonito",
+        "longDescription": "",
+        "composition": ""
+    }
+]
