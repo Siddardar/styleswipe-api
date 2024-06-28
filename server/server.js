@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const BrandsMen = require("./modals/BrandsMen");
+const BrandsWomen = require("./modals/BrandsWomen");
+
 const Uniqlo = require("./modals/Uniqlo");
 const UniqloMenTops = require("./modals/UniqloMenTops");
 const UniqloWomenTops = require("./modals/UniqloWomenTops");
@@ -26,6 +29,19 @@ const uri = databaseUrl;
 mongoose.connect(uri, {
     dbName: 'my_data',
 });
+
+//Brands Routes
+app.get("/getBrandsMen", (_, res) => {
+  BrandsMen.find()
+    .then(brandsData => res.json(brandsData))
+    .catch(err => console.log(err))
+})
+
+app.get("/getBrandsWomen", (_, res) => {
+  BrandsWomen.find()
+    .then(brandsData => res.json(brandsData))
+    .catch(err => console.log(err))
+})
 
 //Clothing Routes Men
 app.get("/getUniqlo", (_, res) => {
