@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 const BrandsMen = require("./modals/BrandsMen");
 const BrandsWomen = require("./modals/BrandsWomen");
@@ -74,7 +75,44 @@ app.get("/Women/getLoveBonitoTops", (_, res) => {
     .catch(err => console.log(err))
 })
 
+//Create Stack Men
+app.get('/Men/getStack', async (req, res) => {
+  const brands = req.query.brands.split(',');
+  let stack = [];
 
+  for (let brand of brands) {
+    const url = `${req.protocol}://${req.hostname}:${port}/Men/get${brand}Tops`;
+    const response = await axios.get(url);
+    stack.push(...response.data[0]['clothes_data']);
+  }
+
+  stack = stack.sort(() => Math.random() - 0.5);
+
+  const selectedItems = stack.slice(0, 50);
+
+  res.json({ clothes_data: selectedItems });
+});
+  
+//Create Stack Women
+app.get('/Women/getStack', async (req, res) => {
+  const brands = req.query.brands.split(',');
+  let stack = [];
+
+  for (let brand of brands) {
+    const url = `${req.protocol}://${req.hostname}:${port}/Women/get${brand}Tops`;
+    const response = await axios.get(url);
+    stack.push(...response.data[0]['clothes_data']);
+  }
+
+  for (let i = stack.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [stack[i], stack[j]] = [stack[j], stack[i]];
+  }
+
+  const selectedItems = stack.slice(0, 50);
+
+  res.json({ clothes_data: selectedItems });
+});
 
 //Stripe Routes
 app.post('/payment-sheet', async (req, res) => {
