@@ -81,7 +81,7 @@ app.get('/Men/getStack', async (req, res) => {
   let stack = [];
 
   for (let brand of brands) {
-    const url = `${req.protocol}://${req.hostname}:${port}/Men/get${brand}Tops`;
+    const url = `/Men/get${brand}Tops`;
     const response = await axios.get(url);
     stack.push(...response.data[0]['clothes_data']);
   }
@@ -99,7 +99,7 @@ app.get('/Women/getStack', async (req, res) => {
   let stack = [];
 
   for (let brand of brands) {
-    const url = `${req.protocol}://${req.hostname}:${port}/Women/get${brand}Tops`;
+    const url = `${req.protocol}://${req.hostname}/Women/get${brand}Tops`;
     const response = await axios.get(url);
     stack.push(...response.data[0]['clothes_data']);
   }
