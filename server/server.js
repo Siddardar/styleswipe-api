@@ -81,7 +81,7 @@ app.get('/Men/getStack', async (req, res) => {
   let stack = [];
 
   for (let brand of brands) {
-    const url = `/Men/get${brand}Tops`;
+    const url = `${req.protocol}://${req.hostname}/Men/get${brand}Tops`;
     const response = await axios.get(url);
     stack.push(...response.data[0]['clothes_data']);
   }
