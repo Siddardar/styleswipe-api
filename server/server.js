@@ -116,7 +116,8 @@ app.get('/Women/getStack', async (req, res) => {
 
 //Stripe Routes
 app.post('/payment-sheet', async (req, res) => {
-  const { totalPrice } = req.body;
+  const { totalPrice, customerEmail, customerName } = req.body;
+  console.log(req.body)
   const amt = Math.round(parseFloat(totalPrice.substr(2)) * 100);
 
   
@@ -125,9 +126,20 @@ app.post('/payment-sheet', async (req, res) => {
     apiVersion: '2024-04-10',
   });
   
-  const customers = await stripe.customers.list();
+  const stripeCustomers = await stripe.customers.list();
 
-  const customer = customers.data[0];
+  var customer = stripeCustomers.data.find(i => i.email === customerEmail);
+  
+  if (customer === undefined) {
+    //console.log('Creating new customer')
+    customer = await stripe.customers.create({
+      email: customerEmail,
+      name: customerName,
+    });
+  } else {
+    //console.log('Customer already exists') 
+  }
+
   //console.log(customer)
 
   if (!customer) {
