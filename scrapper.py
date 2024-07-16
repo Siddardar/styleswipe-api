@@ -35,8 +35,6 @@ class Uniqlo:
         except requests.exceptions.RequestException as e:
             print(f"Error fetching data: {e}")
             return None
-        
-
     
     def clean(self, json_data):
         if json_data is None:
@@ -227,9 +225,227 @@ class LoveBonito:
         except Exception as e:
             print(f"Error connecting to MongoDB: {e}")
         
+class Zara:
+    def __init__(self) -> None:
+        self.client = requests.Session()
+        
+        self.custom_headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        }
+
+        self.links = [
+            "https://www.zara.com/sg/en/category/2419940/products?ajax=true", 
+            
+        ]
+        self.collections = [
+            "zara_women_tops",
+            
+        ]
+    
+    def fetch(self, link):
+        print("Fetching Zara Data")
+        try:
+            res = self.client.get(link, headers=self.custom_headers)
+            res.raise_for_status()
+            print(res.status_code)
+            return res.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching data: {e}")
+            return None
+    
+    def clean(self, json_data):
+        if json_data is None:
+            return None
+            
+        print("Cleaning Zara Data")
+        data = json_data["productGroups"][0]["elements"]
+
+        clean_data = []
+        
+        for item in data:
+            
+            if "commercialComponents" not in item:
+                continue
+            clothing_data = item["commercialComponents"][0]
+            
+            sizes = ["S, M, L, XL"]
+            
+            images = []
+            for i in clothing_data["detail"]["colors"]:
+                if "deliveryUrl" not in i["xmedia"][0]["extraInfo"]:
+                    continue
+                images.append({
+                    "url": i["xmedia"][0]["extraInfo"]["deliveryUrl"],
+                    "colorString": i["name"],
+                })
+
+            
+
+            
+            clean_data.append({
+                "productID": clothing_data["id"],
+                "name": clothing_data["name"],
+                "price": ["S$", str(int(clothing_data["price"])/100)],
+                "image": images,
+                "gender": "Women",
+                "sizes": sizes,
+                "rating": "",
+                "brand": "Zara",
+                "longDescription": clothing_data["description"],
+                "composition": "",
+            })
+        
+        return {"clothes_data": clean_data}
+    
+    def database(self, json_data, collection_name):
+        if json_data is None:
+            print("No data to insert into the database.")
+            return
+        
+        print("Connecting to MongoDB")
+        
+        load_dotenv()
+        uri = os.getenv("MONGODB_API")
+
+        try:
+            client = MongoClient(uri, tlsCAFile=certifi.where())
+            db = client["my_data"]
+            collection = db[collection_name]
+
+            if isinstance(json_data, list):
+                collection.insert_many(json_data)
+                print("Inserted multiple documents")
+            else:
+                collection.insert_one(json_data)
+                print("Inserted one document")
+        
+            print("Data Inserted")
+        except Exception as e:
+            print(f"Error connecting to MongoDB: {e}")
+
+class ZaraMen:
+    def __init__(self) -> None:
+        self.client = requests.Session()
+        
+        self.custom_headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        }
+
+        self.links = [
+            "https://www.zara.com/sg/en/category/2432042/products?ajax=true", 
+            
+        ]
+        self.collections = [
+            "zara_men_tops",
+            
+        ]
+    
+    def fetch(self, link):
+        print("Fetching Zara Data")
+        try:
+            res = self.client.get(link, headers=self.custom_headers)
+            res.raise_for_status()
+            print(res.status_code)
+            return res.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching data: {e}")
+            return None
+    
+    def clean(self, json_data):
+        if json_data is None:
+            return None
+            
+        print("Cleaning Zara Data")
+        data = json_data["productGroups"][0]["elements"]
+
+        clean_data = []
+        
+        for item in data:
+            
+            if "commercialComponents" not in item:
+                continue
+            clothing_data = item["commercialComponents"]
+
+            sizes = ["S, M, L, XL"]
+            
+            name = ''
+            price = ''
+            id = ''
+            description = ''
+
+            seen = {}
+
+            images = []
+            for i in clothing_data:
+                if "price" not in i:
+                    continue
+                name = i["name"]
+                price = str(int(i["price"])/100)
+                id = i["id"]
+                description = i["description"]
+
+                color_data = i["detail"]["colors"][0]
+                if(color_data["name"] not in seen):
+                    
+                
+                    if "deliveryUrl" not in color_data["xmedia"][0]["extraInfo"]:
+                        continue
+                    seen[color_data["name"]] = color_data["name"]
+                    images.append({
+                        "url": color_data["xmedia"][0]["extraInfo"]["deliveryUrl"],
+                        "colorString": color_data["name"],
+                    })
+
+
+            if name == '':
+                continue
+            clean_data.append({
+                "productID": id,
+                "name": name,
+                "price": ["S$", price],
+                "image": images,
+                "gender": "Men",
+                "sizes": sizes,
+                "rating": "",
+                "brand": "Zara",
+                "longDescription": description,
+                "composition": "",
+            })
+        
+        return {"clothes_data": clean_data}
+    
+    def database(self, json_data, collection_name):
+        if json_data is None:
+            print("No data to insert into the database.")
+            return
+        
+        print("Connecting to MongoDB")
+        
+        load_dotenv()
+        uri = os.getenv("MONGODB_API")
+
+        try:
+            client = MongoClient(uri, tlsCAFile=certifi.where())
+            db = client["my_data"]
+            collection = db[collection_name]
+
+            if isinstance(json_data, list):
+                collection.insert_many(json_data)
+                print("Inserted multiple documents")
+            else:
+                collection.insert_one(json_data)
+                print("Inserted one document")
+        
+            print("Data Inserted")
+        except Exception as e:
+            print(f"Error connecting to MongoDB: {e}")
 
 if __name__ == "__main__":
-    
+    '''
     uniqlo = Uniqlo()
     for i in range(len(uniqlo.links)):
         print(f"Fetching Data for {uniqlo.collections[i]}")
@@ -237,12 +453,27 @@ if __name__ == "__main__":
         cleaned_data = uniqlo.clean(fetched_data)
         uniqlo.database(cleaned_data, uniqlo.collections[i])
     
-    '''
+    
     lovebonito = LoveBonito()
     for i in range(len(lovebonito.links)):
         print(f"Fetching Data for {lovebonito.collections[i]}")
         fetched_data = lovebonito.fetch(lovebonito.links[i])
         cleaned_data = lovebonito.clean(fetched_data)
         lovebonito.database(cleaned_data, lovebonito.collections[i])
+    
+    zara = Zara()
+    for i in range(len(zara.links)):
+        print(f"Fetching Data for {zara.collections[i]}")
+        fetched_data = zara.fetch(zara.links[i])
+        cleaned_data = zara.clean(fetched_data)
+        zara.database(cleaned_data, zara.collections[i])
     '''
+
+    zara_men = ZaraMen()
+    for i in range(len(zara_men.links)):
+        print(f"Fetching Data for {zara_men.collections[i]}")
+        fetched_data = zara_men.fetch(zara_men.links[i])
+        cleaned_data = zara_men.clean(fetched_data)
+        zara_men.database(cleaned_data, zara_men.collections[i])
+    
 

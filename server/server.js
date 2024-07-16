@@ -6,12 +6,15 @@ const BrandsMen = require("./modals/BrandsMen");
 const BrandsWomen = require("./modals/BrandsWomen");
 
 //Uniqlo Modals
-const Uniqlo = require("./modals/Uniqlo");
 const UniqloMenTops = require("./modals/UniqloMenTops");
 const UniqloWomenTops = require("./modals/UniqloWomenTops");
 
 //LoveBonito Modals
 const LoveBonitoWomenTops = require("./modals/LoveBonitoTops");
+
+//Zara Modals
+const ZaraWomenTops = require("./modals/ZaraWomenTops");
+const ZaraMenTops = require("./modals/ZaraMenTops");
 
 const Stripe = require('stripe');
 
@@ -49,14 +52,14 @@ app.get("/getBrandsWomen", (_, res) => {
 })
 
 //Clothing Routes Men
-app.get("/getUniqlo", (_, res) => {
-  Uniqlo.find()
-    .then(clothesData => res.json(clothesData))
-    .catch(err => console.log(err))
-})
 
 app.get("/Men/getUniqloTops", (_, res) => {
   UniqloMenTops.find()
+    .then(clothesData => res.json(clothesData))
+    .catch(err => console.log(err))
+})
+app.get("/Men/getZaraTops", (_, res) => {
+  ZaraMenTops.find()
     .then(clothesData => res.json(clothesData))
     .catch(err => console.log(err))
 })
@@ -71,6 +74,12 @@ app.get("/Women/getUniqloTops", (_, res) => {
 
 app.get("/Women/getLoveBonitoTops", (_, res) => {
   LoveBonitoWomenTops.find()
+    .then(clothesData => res.json(clothesData))
+    .catch(err => console.log(err))
+})
+
+app.get("/Women/getZaraTops", (_, res) => {
+  ZaraWomenTops.find()
     .then(clothesData => res.json(clothesData))
     .catch(err => console.log(err))
 })
