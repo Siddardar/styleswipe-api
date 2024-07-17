@@ -85,11 +85,10 @@ app.get("/Women/getZaraTops", (_, res) => {
 })
 
 //Create Stack Men
-app.get('/Men/getStack', async (req, res) => {
-  const brands = req.query.brands.split(',');
-  const seen = JSON.parse(req.query.seen);
+app.post('/Men/getStack', async (req, res) => {
+  const { brands, seen } = req.body;
 
-  let stack = [];
+  let stack = []; 
 
   for (let brand of brands) {
     const url = `${req.protocol}://${req.hostname}/Men/get${brand}Tops`;
@@ -97,7 +96,7 @@ app.get('/Men/getStack', async (req, res) => {
     for (let item of response.data[0]['clothes_data']) {
       if (!seen.includes(item['name'])) {
         stack.push(item);
-      }
+      } 
     }
     stack.push(...response.data[0]['clothes_data']);
   }
@@ -112,12 +111,12 @@ app.get('/Men/getStack', async (req, res) => {
   res.json({ clothes_data: selectedItems });
 });
   
-//Create Stack Women
-app.get('/Women/getStack', async (req, res) => {
-  const brands = req.query.brands.split(',');
-  const seen = JSON.parse(req.query.seen);
+//Create Stack Women 
+app.post('/Women/getStack', async (req, res) => {
 
-  let stack = [];
+  const { brands, seen } = req.body;
+
+  let stack = []; 
 
   for (let brand of brands) {
     const url = `${req.protocol}://${req.hostname}/Women/get${brand}Tops`;
@@ -125,7 +124,7 @@ app.get('/Women/getStack', async (req, res) => {
     for (let item of response.data[0]['clothes_data']) {
       if (!seen.includes(item['name'])) {
         stack.push(item);
-      }
+      } 
     }
     stack.push(...response.data[0]['clothes_data']);
   }
