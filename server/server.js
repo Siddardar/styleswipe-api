@@ -87,29 +87,18 @@ app.get("/Women/getZaraTops", (_, res) => {
 //Create Stack Men
 app.get('/Men/getStack', async (req, res) => {
   const brands = req.query.brands.split(',');
+  const seen = JSON.parse(req.query.seen);
+
   let stack = [];
 
   for (let brand of brands) {
     const url = `${req.protocol}://${req.hostname}/Men/get${brand}Tops`;
     const response = await axios.get(url);
-    stack.push(...response.data[0]['clothes_data']);
-  }
-
-  stack = stack.sort(() => Math.random() - 0.5);
-
-  const selectedItems = stack.slice(0, 50);
-
-  res.json({ clothes_data: selectedItems });
-});
-  
-//Create Stack Women
-app.get('/Women/getStack', async (req, res) => {
-  const brands = req.query.brands.split(',');
-  let stack = [];
-
-  for (let brand of brands) {
-    const url = `${req.protocol}://${req.hostname}/Women/get${brand}Tops`;
-    const response = await axios.get(url);
+    for (let item of response.data[0]['clothes_data']) {
+      if (!seen.includes(item['name'])) {
+        stack.push(item);
+      }
+    }
     stack.push(...response.data[0]['clothes_data']);
   }
 
@@ -122,7 +111,35 @@ app.get('/Women/getStack', async (req, res) => {
 
   res.json({ clothes_data: selectedItems });
 });
+  
+//Create Stack Women
+app.get('/Women/getStack', async (req, res) => {
+  const brands = req.query.brands.split(',');
+  const seen = JSON.parse(req.query.seen);
 
+  let stack = [];
+
+  for (let brand of brands) {
+    const url = `${req.protocol}://${req.hostname}/Women/get${brand}Tops`;
+    const response = await axios.get(url);
+    for (let item of response.data[0]['clothes_data']) {
+      if (!seen.includes(item['name'])) {
+        stack.push(item);
+      }
+    }
+    stack.push(...response.data[0]['clothes_data']);
+  }
+
+  for (let i = stack.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [stack[i], stack[j]] = [stack[j], stack[i]];
+  }
+
+  const selectedItems = stack.slice(0, 50);
+
+  res.json({ clothes_data: selectedItems });
+});
+ 
 //Stripe Routes
 app.post('/payment-sheet', async (req, res) => {
   const { totalPrice, customerEmail, customerName } = req.body;

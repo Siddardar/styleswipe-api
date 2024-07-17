@@ -270,7 +270,7 @@ class Zara:
                 continue
             clothing_data = item["commercialComponents"][0]
             
-            sizes = ["S, M, L, XL"]
+            sizes = ["S", "M", "L", "XL"]
             
             images = []
             for i in clothing_data["detail"]["colors"]:
@@ -370,7 +370,7 @@ class ZaraMen:
                 continue
             clothing_data = item["commercialComponents"]
 
-            sizes = ["S, M, L, XL"]
+            sizes = ["S", "M", "L", "XL"]
             
             name = ''
             price = ''
@@ -460,14 +460,14 @@ if __name__ == "__main__":
         fetched_data = lovebonito.fetch(lovebonito.links[i])
         cleaned_data = lovebonito.clean(fetched_data)
         lovebonito.database(cleaned_data, lovebonito.collections[i])
-    
+    '''
     zara = Zara()
     for i in range(len(zara.links)):
         print(f"Fetching Data for {zara.collections[i]}")
         fetched_data = zara.fetch(zara.links[i])
         cleaned_data = zara.clean(fetched_data)
         zara.database(cleaned_data, zara.collections[i])
-    '''
+    
 
     zara_men = ZaraMen()
     for i in range(len(zara_men.links)):
