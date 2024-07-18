@@ -92,11 +92,18 @@ app.post('/Men/getStack', async (req, res) => {
 
   for (let brand of brands) {
     const url = `${req.protocol}://${req.hostname}/Men/get${brand}Tops`;
+    //const url = `https://styleswipe.azurewebsites.net/Men/get${brand}Tops`;
+    
     const response = await axios.get(url);
     for (let item of response.data[0]['clothes_data']) {
-      if (!seen.includes(item['name'])) {
+    
+      if (item['name'] in seen) {
+        //console.log('Item already seen: ' + brand + ' ' + item['name'])
+        continue
+    
+      } else {
         stack.push(item);
-      } 
+      }
     }
     stack.push(...response.data[0]['clothes_data']);
   }
@@ -117,14 +124,22 @@ app.post('/Women/getStack', async (req, res) => {
   const { brands, seen } = req.body;
 
   let stack = []; 
-
+  
   for (let brand of brands) {
     const url = `${req.protocol}://${req.hostname}/Women/get${brand}Tops`;
+    //const url = `https://styleswipe.azurewebsites.net/Women/get${brand}Tops`;
+    
     const response = await axios.get(url);
+    
     for (let item of response.data[0]['clothes_data']) {
-      if (!seen.includes(item['name'])) {
+    
+      if (item['name'] in seen) {
+        //console.log('Item already seen: ' + brand + ' ' + item['name'])
+        continue
+    
+      } else {
         stack.push(item);
-      } 
+      }
     }
     stack.push(...response.data[0]['clothes_data']);
   }
