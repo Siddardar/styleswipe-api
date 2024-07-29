@@ -126,7 +126,7 @@ app.post('/Men/getStack', async (req, res) => {
     [stack[i], stack[j]] = [stack[j], stack[i]];
   }
 
-  const selectedItems = stack.slice(0, 50);
+  const selectedItems = stack.slice(0, 20);
 
   res.json({ clothes_data: selectedItems });
 });
@@ -162,7 +162,7 @@ app.post('/Women/getStack', async (req, res) => {
     [stack[i], stack[j]] = [stack[j], stack[i]];
   }
 
-  const selectedItems = stack.slice(0, 50);
+  const selectedItems = stack.slice(0, 20);
 
   res.json({ clothes_data: selectedItems });
 });
